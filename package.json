@@ -1,0 +1,18 @@
+{
+  "name": "untitled1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@taquito/taquito": "^7.1.0-beta.0",
+    "bs58check": "^2.1.2",
+    "elliptic": "^6.5.4",
+    "libsodium-wrappers": "^0.7.9"
+  }
+}
