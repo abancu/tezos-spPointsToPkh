@@ -1,14 +1,15 @@
 const {Buffer} = require("buffer");
+const request = require('request');
 
+
+const { TezosToolkit } = require('@taquito/taquito');
 const toolkit = new TezosToolkit('https://mainnet-tezos.giganode.io');
 const elliptic = require('elliptic');
 const Bs58check = require('bs58check');
 const libs = require('libsodium-wrappers');
 
-
-
-let px = '769eb98169d9204aed31c8cb3fbbb64ca8c98877c4aae910fb5ee0989b4dbb6a';
-let py = '7d1fad33d2e1854c7495592c75fc631e23356ed78eda22bfbf3e06ed657ee083';
+const lineReader = require('line-reader');
+const fs = require('fs');
 
 let prefix = {
     tz1: new Uint8Array([6, 161, 159]),
@@ -29,7 +30,49 @@ let prefix = {
 
 (async() => {
     await libs.ready;
-    console.log(spPointsToPkh(px, py));
+
+    lineReader.eachLine('./twitter_ids', function(line) {
+        // console.log(line);
+        let options = {
+            url: "https://torus-19.torusnode.com/jrpc",
+            method: "get",
+            headers:
+                {
+                    "content-type": "application/json"
+                },
+            body: JSON.stringify(
+                {
+                    "id": 10,
+                    "jsonrpc": "2.0",
+                    "method": "VerifierLookupRequest",
+                    "params": {
+                        "verifier": "tezos-twitter",
+                        "verifier_id": `twitter|${line}`
+                    }
+
+                }
+            )
+        };
+        request(options, (error, response, body) => {
+            if (error) {
+                console.error('An error has occurred: ', error);
+            } else {
+                body = JSON.parse(body);
+                if (!body.error) {
+                    let tz2 = spPointsToPkh(body.result.keys[0].pub_key_X, body.result.keys[0].pub_key_Y);
+                    toolkit.tz.getBalance(tz2).then( x => {
+                        fs.appendFile('tz2_addresses', `${tz2}:${x.toNumber()}\n`, function (err) {
+                            if (err) throw err;
+                            console.log('Saved!');
+                        });
+                    }).catch(e => console.log(e));
+                }
+
+            }
+        });
+    });
+
+    // console.log(spPointsToPkh(px, py));
 })();
 function spPointsToPkh(pubX, pubY) {
     const key = (new elliptic.ec('secp256k1')).keyFromPublic({ x: pubX, y: pubY });
@@ -78,3 +121,10 @@ function b58cdecode(enc, prefixx) {
     n = n.slice(prefixx.length);
     return n;
 }
+
+
+
+
+
+
+
