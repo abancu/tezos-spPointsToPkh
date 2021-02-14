@@ -10,20 +10,7 @@ yarn
 # Run
 ## Add twitter_ids in the twitter ids, each line new twitter id (integer)
 
-
-```
-1355651864096858114
-1050535565383426051
-1201876103964573700
-3407586405
-1347447910158499846
-51362228
-385045084
-88412541
-```
-
-
-## from the server go to twitter ids save location and retrieve them:
+### from the server go to twitter ids save location and retrieve them:
 ```bash
 cd /home/educoinme/tezos-spPointsToPkh; cat /home/educoinme/educoinme/data/*.json | jq '.[].twitter_id' | xargs -I {} echo {} > twitter_ids
 ```
