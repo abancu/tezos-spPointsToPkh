@@ -25,8 +25,7 @@ yarn
 
 ## from the server go to twitter ids save location and retrieve them:
 ```bash
-cd /home/educoinme/educoinme/data
-cat *.json | jq '.[].twitter_id' | xargs -I {} echo {}
+cd /home/educoinme/tezos-spPointsToPkh; cat /home/educoinme/educoinme/data/*.json | jq '.[].twitter_id' | xargs -I {} echo {} > twitter_ids
 ```
 
 
