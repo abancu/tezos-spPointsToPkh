@@ -28,49 +28,57 @@ let prefix = {
     KT: new Uint8Array([2, 90, 121])
 };
 
+const fromAddress = 'tz1gHJt7J1aEtW2wpCR5RJd3CpnbVxUTaEXS';
+
 (async() => {
     await libs.ready;
+    fs.writeFile('./data.csv', '', function(err) {
+        if (err) console.log(err);
+        lineReader.eachLine('./twitter_ids', function(line) {
+            let options = {
+                url: "https://torus-19.torusnode.com/jrpc",
+                method: "get",
+                timeout: 1000,
+                headers:
+                    {
+                        "content-type": "application/json"
+                    },
+                body: JSON.stringify(
+                    {
+                        "id": 10,
+                        "jsonrpc": "2.0",
+                        "method": "VerifierLookupRequest",
+                        "params": {
+                            "verifier": "tezos-twitter",
+                            "verifier_id": `twitter|${line}`
+                        }
 
-    lineReader.eachLine('./twitter_ids', function(line) {
-        // console.log(line);
-        let options = {
-            url: "https://torus-19.torusnode.com/jrpc",
-            method: "get",
-            headers:
-                {
-                    "content-type": "application/json"
-                },
-            body: JSON.stringify(
-                {
-                    "id": 10,
-                    "jsonrpc": "2.0",
-                    "method": "VerifierLookupRequest",
-                    "params": {
-                        "verifier": "tezos-twitter",
-                        "verifier_id": `twitter|${line}`
                     }
-
+                )
+            };
+            request(options, (error, response, body) => {
+                if (error) {
+                    console.error('An error has occurred: ', error);
+                } else {
+                    try {
+                        body = JSON.parse(body);
+                        if (!body.error) {
+                            let tz2 = spPointsToPkh(body.result.keys[0].pub_key_X, body.result.keys[0].pub_key_Y);
+                            toolkit.tz.getBalance(tz2).then( x => {
+                                fs.appendFile('./data.csv', `${fromAddress},${tz2},0,1\n`, function (err) {
+                                    if (err) throw err;
+                                    console.log('Saved!');
+                                });
+                            }).catch(e => console.log(e));
+                        }
+                    } catch (e) {
+                        console.log(e, options, body);
+                    }
                 }
-            )
-        };
-        request(options, (error, response, body) => {
-            if (error) {
-                console.error('An error has occurred: ', error);
-            } else {
-                body = JSON.parse(body);
-                if (!body.error) {
-                    let tz2 = spPointsToPkh(body.result.keys[0].pub_key_X, body.result.keys[0].pub_key_Y);
-                    toolkit.tz.getBalance(tz2).then( x => {
-                        fs.appendFile('tz2_addresses', `${tz2}:${x.toNumber()}\n`, function (err) {
-                            if (err) throw err;
-                            console.log('Saved!');
-                        });
-                    }).catch(e => console.log(e));
-                }
-
-            }
+            });
         });
     });
+
 
     // console.log(spPointsToPkh(px, py));
 })();
