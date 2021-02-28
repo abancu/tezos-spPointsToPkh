@@ -1,3 +1,4 @@
 node_modules
 tz2_addresses
 data.csv
+db/database.sqlite

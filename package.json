@@ -10,16 +10,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cef-ebsi/app-jwt": "^0.0.12",
     "@taquito/signer": "^8.0.1-beta.1",
     "@taquito/taquito": "^7.1.0-beta.0",
     "axios": "^0.21.1",
     "bs58check": "^2.1.2",
     "csv-parser": "^3.0.0",
     "elliptic": "^6.5.4",
+    "got": "^11.8.2",
     "https": "^1.0.0",
     "json-rpc-2.0": "^0.2.15",
     "libsodium-wrappers": "^0.7.9",
     "line-reader": "^0.4.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "sequelize": "^6.5.0",
+    "sqlite3": "^5.0.2"
   }
 }
